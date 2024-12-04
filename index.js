@@ -77,6 +77,13 @@ const isCollided = (node, area) => {
     return false;
 }
 
+// テキストを描画する関数
+const drawText = (text, x, y, font, color) => {
+    ctx.fillStyle = color;
+    ctx.font = font;
+    ctx.fillText(text, x, y);
+}
+
 // キーが押されたときの処理
 document.addEventListener("keydown", (e) => {
     if (e.key === "a") {
@@ -108,6 +115,7 @@ document.addEventListener("keydown", (e) => {
 )
 // 今の秒数的な
 let now = 0;
+let combo = 0;
 
 // =====================
 // 10msごとに実行する処理
@@ -137,12 +145,19 @@ setInterval(() => {
     CURRENT_NODES.forEach((node) => {
         // ノードが盤外に移動したら削除する
         if (node.pos.y + node.size.y > CANVAS_HEIGHT) {
+            if (node.checked) {
+                combo++;
+            } else {
+                combo = 0;
+            }
             CURRENT_NODES.shift();
             return;
         }
         moveNode(node);
         drawRect(node, node.color);
     });
+    drawText("score: " + score, 10, 30, "30px sans-serif", "white");
+    drawText("combo: " + combo, 10, 60, "30px sans-serif", "white");
     now++;
     console.log(score)
 }
