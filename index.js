@@ -11,13 +11,13 @@ const lineWidth = 10;
 const nodeSize = { x: 100, y: 40 };
 // 落ちてくるノードの定義
 const colors = ["red", "blue", "yellow", "purple", "orange"];
-const NODES = colors.map((color, i) => ({
-    line: i,
+const NODES = Array.from({ length: 20 }, (_, i) => ({
+    line: Math.floor(Math.random() * 5),
     time: (i + 1) * 10,
-    color: color,
+    color: colors[Math.floor(Math.random() * 5)],
     size: nodeSize,
     checked: false,
-}));
+}))
 // ラインの定義
 const LINES = Array.from({ length: 6 }, (_, i) => ({
     line: i,
@@ -59,7 +59,7 @@ const drawRect = (rect, color, alpha = 1) => {
 // ノードを動かす関数
 // 引数：動かしたいノード
 const moveNode = (node) => {
-    node.pos.y += 1;
+    node.pos.y += 5;
 }
 
 // ノードと判定エリアが衝突しているかどうかを判定する関数
@@ -70,7 +70,11 @@ const isCollided = (node, area) => {
     // 既に判定してたら無視する
     if (node.checked) return false;
     // ノードが判定エリアにある場合は、ノードを確認済みにする
-    if (area.pos.y <= node.pos.y && node.pos.y <= area.pos.y + area.size.y) {
+    const nodeTop = node.pos.y;
+    const nodeBottom = node.pos.y + node.size.y;
+    const areaTop = area.pos.y;
+    const areaBottom = area.pos.y + area.size.y;
+    if (nodeBottom > areaTop && nodeTop < areaBottom) {
         node.checked = true;
         return true;
     }
@@ -145,6 +149,7 @@ setInterval(() => {
     CURRENT_NODES.forEach((node) => {
         // ノードが盤外に移動したら削除する
         if (node.pos.y + node.size.y > CANVAS_HEIGHT) {
+            // この処理だと、正確にコンボは計測できないけど、いったんね！
             if (node.checked) {
                 combo++;
             } else {
